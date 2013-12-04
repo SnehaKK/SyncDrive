@@ -1,0 +1,7 @@
+{% for entry in listFiles %}
+	{% if entry.is_folder == False %}
+	<p><b> <a style="font-family: 'Wellfleet', cursive;" id="p{{pane}}{{entry.id}}" download="{{entry.name}}" href="{{entry.link}}">{{entry.name}}</a></b></p>
+	{% else %}
+	<p><b> <a style="font-family: 'Wellfleet', cursive;" id="{{entry.id}}" href="javascript:listFiles('{{pane}}','{{drive}}','{{entry.id}}');">{{entry.name}}</a></b></p>
+	{% endif %}
+{% endfor %}
