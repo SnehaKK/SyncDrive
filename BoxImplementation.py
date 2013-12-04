@@ -14,20 +14,30 @@ import Encrypt
 from CloudUtils import LOG
 from CloudUtils import splitsvilla
 from CloudUtils import marriage
+from Encrypt import encrypt_file
+from Encrypt import getHashKey
 from subprocess import call
 from subprocess import check_call
+from OpenSSL import SSL
+context = SSL.Context(SSL.SSLv23_METHOD)
+context.use_privatekey_file('./certs2/server.key')
+context.use_certificate_file('./certs2/server.crt')
+
+
 
 app = Flask(__name__)
 
 file_handler = logging.FileHandler("logs", mode='a', encoding=None, delay=False)
 file_handler.setLevel(logging.WARNING)
 app.logger.addHandler(file_handler)
+client_id = 'nfgvqw2i0twl9fxirk0vdcn5ymcpe8qg'
+client_secret = 'nTruuZXxpqVoOKoMrbc0r4hmvwtHxIL7'
 access_token = ''
 refresh_token = ''
 expires_in = ''
 baseBoxURL = 'https://api.box.com'
-UPLOAD_FOLDER = '/Users/snehakulkarni/Documents/CMPE273/myproject/useruploads'
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+UPLOAD_FOLDER = '/Users/snehakulkarni/Documents/CMPE273/myproject/final_demo/Box/useruploads'
+DOWNLOAD_FOLDER = '/Users/snehakulkarni/Documents/CMPE273/myproject/final_demo/Box/userdownloads'
 
 @app.route("/")
 def hello():
@@ -54,8 +64,8 @@ def boxResponse():
 		url = 'https://www.box.com/api/oauth2/token'
 		values = {  'grant_type' : 'authorization_code',
 					'code' : code,
-					'client_id' : 's6ggdcvbwg7yswvyaxstqc0eu2bnnuzb',
-					'client_secret' : 'U7809BWEVV3kRzMGTqjNHYpqHF9wUkBH' }
+					'client_id' : client_id,
+					'client_secret' : client_secret }
 		data = urllib.urlencode(values)
 		req = urllib2.Request(url, data)
 		#Send the request to BOX
@@ -97,7 +107,6 @@ def boxDownload():
 
 # Accepts the access_token and returns the list of folders    
 def getFolderList(folderID):
-	#sloppy code.. put the redundant part in a different method.
 	#Create a request to access the users folders. The root folder is denoted by 0
 	global access_token
 	LOG('access_token----------'+access_token)
@@ -148,7 +157,8 @@ def addFileUploadForm(folderID):
 	<input type="file" name="file" id="file" multiple />\
 	<input type="hidden" name="folderID" id="folderID" value="'+ folderID +'" />\
 	<input type="checkbox" name="Encrypt" value="Encrypt">Encrypt Files</input>\
-	<input type="checkbox" name="" value="Split">Split Files</input>\
+	<input type="checkbox" name="Split" value="Split">Split Files</input>\
+	<br> <br> Enter encryption password: <input type="text" name="Password" id="Password"/>\
 	<button type="submit" id="btn">Upload Files!</button>\
 	</form> '
 	return formString
@@ -180,13 +190,16 @@ def genrateBreadCrum(parentTree,currentFolder):
 def upload_file():
 	global UPLOAD_FOLDER
 	if request.method == 'POST':
+		folderID = None
+		doEncrypt = None
+		doSplit = None
+		password = None
 		LOG('in uploadFile Post Method')
 		try :
 			file = request.files['file']
 		except KeyError, e :
-			LOG('No File')		
+			LOG('No File')
 			return getErrorPage()
-		#LOG('------------FILE:' + file)
 		folderID = request.form['folderID']
 		try :
 			doEncrypt = request.form['Encrypt']
@@ -196,20 +209,40 @@ def upload_file():
 			doSplit = request.form['Split']
 		except KeyError, e :
 			LOG('No Split')
-		LOG('in uploadFile: folderID:' + folderID + ' Encrypt:' + doEncrypt +' Split:' + doSplit)
+		if doEncrypt:
+			try:
+				password = request.form['Password']
+			except KeyError, e :
+				LOG('No Password')
+		LOG('in uploadFile: folderID:' + folderID + ' Encrypt:' + str(doEncrypt) +' Split:' + str(doSplit))
 		filename = file.filename
 		#This saves the file to the defined upload folder.
 		file.save(os.path.join(UPLOAD_FOLDER, filename))
-		#If encrypt is selected encrypt the file before uploading to box
-		#If Split is selected split the file before uploading to box
-		#Then pass the List of files that need to uploaded to uploadToBox folder.
-		return uploadToBox(file,os.path.join(UPLOAD_FOLDER, filename),folderID);
+		#Depending on what sessions the user has signed in (eg dropbox or box) 
+		if doSplit == 'Split':
+			SplitFileList = splitsvilla(UPLOAD_FOLDER,filename,2)
+		else:
+			SplitFileList = None
+		if doEncrypt == 'Encrypt':
+			key = getHashKey(password)
+			if SplitFileList:
+				for fileItem in SplitFileList:
+					uploadToBox(os.path.join(UPLOAD_FOLDER, encrypt_file(os.path.join(UPLOAD_FOLDER,fileItem),key)),folderID)
+			else:
+				uploadToBox(os.path.join(UPLOAD_FOLDER,encrypt_file(os.path.join(UPLOAD_FOLDER,filename),key)),folderID)
+		if doSplit == 'Split':
+			if not doEncrypt:
+				for fileItem in SplitFileList:
+					uploadToBox(os.path.join(UPLOAD_FOLDER,fileItem),folderID)
+		if not doSplit and not doEncrypt:
+			uploadToBox(os.path.join(UPLOAD_FOLDER,filename,folderID))
+		return getFolderList(folderID)
 	return getErrorPage()
 
 #Uplode the users file to box.
 #Later : Implement a way to split files and merge files.
 #Give a separate download list for files that have been split. 
-def uploadToBox(file,filePath,folderID):
+def uploadToBox(filePath,folderID):
 	global access_token
 	global baseBoxURL
 	url = baseBoxURL + '/2.0/files/content'
@@ -227,23 +260,23 @@ def uploadToBox(file,filePath,folderID):
 	ret = requests.post(url, headers=headers, files=files, verify=False)
 	if ret.status_code == 201:
 		#refresh the file container page
-		return getFolderList(folderID)
+		return 1
 	else:
-		return getErrorPage(folderID)
+		return -1
 
 
 #Upon any error show this error page. 
 def getErrorPage(folderID):
 	global access_token
 	#Disabling the session.
-	access_token = ''; 
+	access_token = '';
 	errorPage = '<html><h1>oops...you reached the error page.</h1>\
 	<body>Your Box session is refreshed. Please sign in again.\
 	<a href="https://www.box.com/api/oauth2/authorize?response_type=code&client_id=s6ggdcvbwg7yswvyaxstqc0eu2bnnuzb&state=authenticated"> Go to box</a></body>\
 	</html>'
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', debug=True, port=8100, ssl_context=('/Users/snehakulkarni/Documents/CMPE273/myproject/certs2/server.crt', '/Users/snehakulkarni/Documents/CMPE273/myproject/certs2/server.key')) 
+    app.run('0.0.0.0', debug=True, port=8101, ssl_context=context) 
 
 
 #This is not working. Figure out why. However the alternative code in function boxdownload is working. Hence ignore this. 
