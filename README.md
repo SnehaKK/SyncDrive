@@ -1,5 +1,4 @@
 SyncDrive
 =========
 
-Sync ALL your cloud Drives
-
+Access all of your cloud storage from one place!!!
