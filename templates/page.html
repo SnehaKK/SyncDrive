@@ -1,0 +1,11 @@
+<html>
+ <head>
+  <h1>Welcome {{response.data[0].from.name}}</h1>
+  <h2>Skydrive Avaliable space :: {{quota}} </h2>
+ </head>
+ <body>
+ {% for entry in response.data %}
+   <p><b>{{entry.name}} :: <a href={{entry.link}}>Document</a></b></p>
+ {% endfor %}
+ </body>  
+</html>

@@ -1,0 +1,10 @@
+<html>
+<br>Welcome {{name}} !!
+<br>Storage Space in Drive is {{quota}}
+
+{% for entry in listFiles %}
+        <p><b> <a href="{{entry.raw_link}}">{{entry.name}}</a> :: {{entry.size}}</b></p>
+{% endfor %}
+
+
+</html>

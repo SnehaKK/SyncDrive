@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SyncDrive!</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+          padding-top: 50px;
+          padding-bottom: 20px;
+        }
+    </style>
+    {% if error: %}
+    <script>
+        alert('Email and password does not match! Please try again');
+    </script>
+    {% endif %}
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">SyncDrive</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right" action="/login" method="post">
+            <div class="form-group">
+              <input type="text" name="email" placeholder="Email" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" name="password" placeholder="Password" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">Sign in</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="jumbotron">
+      <div class="container">
+        <p>
+          <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+              <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+              <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+              <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+              <li data-target="#carousel-example-generic" data-slide-to="3"></li>
+              <li data-target="#carousel-example-generic" data-slide-to="4"></li>
+              <li data-target="#carousel-example-generic" data-slide-to="5"></li>
+              <li data-target="#carousel-example-generic" data-slide-to="6"></li>
+            </ol>
+
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner">
+              <div style="text-align:center" class="item active">
+                <div class="wrapper"><img width = "1200px" height="400px" src="/static/image1.jpg" alt="cloud umage">
+                <div class="carousel-caption">  
+                  <h2>Welcome to SyncDrive!</h2>
+                  <p>SyncDrive allows you to organize all your files in the Cloud under one roof. Once you sign in, you will be able to manage your files by simple drag and drop gestures.</p>
+                  <p><a href="/sign_up" class="btn btn-primary btn-lg" role="button">Sign up!</a></p>
+                </div>
+                </div>
+              </div>
+              <div class="item">
+                <div class="wrapper"><img width = "1200px" height="400px" src="/static/p1.jpg" alt="cloud image">
+                  <div class="carousel-caption">
+                  <!--Add text here -->
+                  </div>
+                </div>
+                <h3><p align="center"><font color="990066">Manage Your Diversified Data in One Single View!!!</font></p><h3>
+              </div>
+
+                <div class="item">
+                <div class="wrapper"><img width = "1200px" height="400px" src="/static/p2.jpg" alt="cloud image">
+                <div class="carousel-caption">
+                  <!--Add text here -->
+                </div>
+                </div>
+                <h3><p align="center"><font color="000096">Simple Drag and Drop between drives to manage space</font></p><h3>
+                </div>
+                <div class="item">
+                <div class="wrapper"><img width = "1200px" height="400px" src="/static/p3.jpg" alt="cloud image">
+                <div class="carousel-caption">
+                  <!--Add text here -->
+                    
+                </div>
+        <h3 align="center"><font color="960000">Simple Drag and Drop between drives to manage space</font></h3>
+                </div>
+                </div>
+                <div class="item">
+                <div class="wrapper"><img width = "1200px" height="400px" src="/static/p4.jpg" alt="cloud image">
+                <div class="carousel-caption">
+                  <!--Add text here -->
+          
+                </div>
+        <h3 align="center"><font color="008900">Handle all your data at one place by splitting and merging files with ease</font></h3>
+                </div>
+                </div>  
+ <div class="item">
+                <div class="wrapper"><img width = "1200px" height="400px" src="/static/p5.jpg" alt="cloud image">
+                <div class="carousel-caption">
+                  <!--Add text here -->
+          
+                </div>
+        <h3 align="center"><font color="000000">Unified Cloud Storage System</font></h3>
+                </div>
+                </div>          
+            </div>
+
+            <!-- Controls -->
+            <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+              <span class="glyphicon glyphicon-chevron-left"></span>
+            </a>
+            <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+              <span class="glyphicon glyphicon-chevron-right"></span>
+            </a>
+          </div>
+        </p>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+      </div>
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
