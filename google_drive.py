@@ -34,7 +34,9 @@ def upload_file(filename,email):
 	r = requests.post(url, data = open(filename, 'rb').read())
 	file_id = json.loads(r.text)['id']
 	url = "https://www.googleapis.com/drive/v2/files/%(file_id)s?access_token=%(access_token)s" % locals()
-	r = requests.put(url, data = json.dumps({'title': os.path.basename(filename)}), headers = {'Content-Type': "application/json"}).json()
+	r = requests.put(url, 
+				     data = json.dumps({'title': os.path.basename(filename)}),
+				     headers = {'Content-Type': "application/json"}).json()
 	return construct_file_record(r)
 
 def construct_file_record(record):
@@ -70,9 +72,8 @@ def refresh_token(email):
     db_util.save_token(label,'access_token',response['access_token'], email)
 
 if __name__ == "__main__":
-        upload_file('/tmp/test.txt', 'madhuraman87@gmail.com')
-	print 'done :)'
-	#print list_files('madhuraman87@gmail.com')
+	#print list_files('gaya.0408@gmail.com')
 	#print gd_download_file('0B2xo1MFqnLo5dUtfRHVMbExvZWc','ya29.AHES6ZTZz8XGWDowjsgQs8InH5BKFxuFCaBDcr2JCkLbFjQ7Ww')
 	#gd_upload_file('templates/hello.html','ya29.AHES6ZQIKpE9Cbypa1jLXGtlmJAZqFMYz5cvlpFwfn5zpq7kMFUDcVnj')
-	
+	upload_file('/tmp/test.txt', 'gaya.0408@gmail.com')
+	print 'done :)'
